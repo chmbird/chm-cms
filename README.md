@@ -1,2 +1,2 @@
-# chm-cms
+# ChmCMS
 A lightweight PHP CMS for learning.

@@ -1,3 +1,11 @@
+# os
+.DS_Store
+
+# IDE files
+.idea
+.vscode
+
+# build and runtime
 composer.phar
 /vendor/
 

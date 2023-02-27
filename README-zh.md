@@ -2,26 +2,54 @@
 一个用于学习的轻量级 PHP-CMS。
 
 ## 变更日志
-初始化前端部分项目源码，使用Vue@3，采用Vite构建。
+在前面的提交中，我们安装了npm包“axios”，用于前端发送http请求。  
+现在，我们添加测试代码，验证一下，前端可以访问到php。  
+首先，我们需要配置一下Vite的代理，参考[官方文档](https://cn.vitejs.dev/config/server-options.html#server-proxy)  
+配置文件：`client-src/vite.config.ts`
+```
+const targetHost = 'http://chmcms.local'
 
-直接使用命令：
-```shell
-cd client-src
-npm init vue@latest .
+server: {
+  proxy: {
+    '/api/': {
+      target: targetHost,
+      changeOrigin: true
+    }
+  }
+}
 ```
-Vite显示一个对话形式设置Vue配置(括号是设置的值)：
+现在，在`App.vue`中添加测试代码
 ```
-Vue.js - The Progressive JavaScript Framework
-✔ Current directory is not empty. Remove existing files and continue? (yes)
-✔ Package name: (chm-cms)
-✔ Add TypeScript? (Yes)
-✔ Add JSX Support? (No)
-✔ Add Vue Router for Single Page Application development? (Yes)
-✔ Add Pinia for state management? (Yes)
-✔ Add Vitest for Unit Testing? (Yes)
-✔ Add an End-to-End Testing Solution? (No)
-✔ Add ESLint for code quality? (Yes)
-✔ Add Prettier for code formatting? (Yes)
+import axios from 'axios'
+import { onMounted } from "vue"
+
+function request() {
+  axios.get('/api/').then(res => {
+    console.log(res.data)
+  }).catch(err => {
+    console.log(err)
+  })
+}
+
+onMounted(() => {
+  request()
+})
 ```
-解释一下：  
-项目使用TS开发前端，所以“TypeScript”选“Yes”，其它都是非必选项，可以都选No，后期再加。
+接下来，运行：“`npm run dev`”  
+终端输出：
+```
+  VITE v4.1.4  ready in 466 ms
+
+  ➜  Local:   http://127.0.0.1:5173/
+  ➜  Network: use --host to expose
+  ➜  press h to show help
+```
+在浏览器里访问：“http://127.0.0.1:5173/”，并打开“开发者工具”，“Console”将会显示：
+```
+chm cms api
+```
+这正是`public/api/index.php`的输出：
+```php
+<?php
+echo 'chm cms api';
+```

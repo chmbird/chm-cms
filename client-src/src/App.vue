@@ -1,6 +1,20 @@
 <script setup lang="ts">
 import { RouterLink, RouterView } from 'vue-router'
 import HelloWorld from './components/HelloWorld.vue'
+import axios from 'axios'
+import { onMounted } from "vue"
+
+function request() {
+  axios.get('/api/').then(res => {
+    console.log(res.data)
+  }).catch(err => {
+    console.log(err)
+  })
+}
+
+onMounted(() => {
+  request()
+})
 </script>
 
 <template>

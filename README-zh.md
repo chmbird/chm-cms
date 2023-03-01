@@ -1,55 +1,94 @@
 # ChmCMS
+
 一个用于学习的轻量级 PHP-CMS。
 
 ## 变更日志
-在前面的提交中，我们安装了npm包“axios”，用于前端发送http请求。  
-现在，我们添加测试代码，验证一下，前端可以访问到php。  
-首先，我们需要配置一下Vite的代理，参考[官方文档](https://cn.vitejs.dev/config/server-options.html#server-proxy)  
-配置文件：`client-src/vite.config.ts`
-```
-const targetHost = 'http://chmcms.local'
 
-server: {
-  proxy: {
-    '/api/': {
-      target: targetHost,
-      changeOrigin: true
+现在，初始化服务端项目。使用`Composer`来管理PHP依赖，[参考文档](https://docs.phpcomposer.com/)  
+命令行运行：
+
+```shell
+cd server
+composer init
+```
+
+`Composer`提供一个交互式配置选项：
+
+```
+Welcome to the Composer config generator
+
+This command will guide you through creating your composer.json config.
+
+Package name (<vendor>/<name>) [default]: chmbird/chm-cms  // 项目命名
+Description []: A lightweight PHP CMS for learning.        // 项目描述
+Author [default <email>, n to skip]:                       // 输入作者名字和Email
+Minimum Stability []:                                      // 最低稳定性
+Package Type (e.g. library, project, ) []: project         // 项目类型
+License []: Apache-2.0                                     // 许可
+```
+
+以上是部分选项，可以一路回车跳过，稍后再改。  
+`Do you confirm generation [yes]?`，确认后，显示：
+
+```
+PSR-4 autoloading configured. Use "namespace Chmbird\ChmCms;" in src/
+Include the Composer autoloader with: require 'vendor/autoload.php';
+```
+
+完成，生成`server/composer.json`配置文件，手动调整一下：
+
+```
+...
+
+  "autoload": {
+    "psr-4": {
+      "chmbird\\chmcms\\": "src/"    // 改为小写
     }
-  }
-}
+  },
+...
 ```
-现在，在`App.vue`中添加测试代码
-```
-import axios from 'axios'
-import { onMounted } from "vue"
 
-function request() {
-  axios.get('/api/').then(res => {
-    console.log(res.data)
-  }).catch(err => {
-    console.log(err)
-  })
-}
+配置完成，安装PHP依赖：
 
-onMounted(() => {
-  request()
-})
+```shell
+cd server
+composer install
 ```
-接下来，运行：“`npm run dev`”  
-终端输出：
-```
-  VITE v4.1.4  ready in 466 ms
 
-  ➜  Local:   http://127.0.0.1:5173/
-  ➜  Network: use --host to expose
-  ➜  press h to show help
-```
-在浏览器里访问：“http://127.0.0.1:5173/”，并打开“开发者工具”，“Console”将会显示：
-```
-chm cms api
-```
-这正是`public/api/index.php`的输出：
+新建PHP Class，`server/src/App.php`
+
 ```php
-<?php
-echo 'chm cms api';
+namespace chmbird\chmcms;
+
+class App {
+    ...
+    public function run() {
+        echo 'chm cms server app is running...';
+    }
+    ...
+}
+```
+
+引用，`server/index.php`：
+
+```php
+namespace chmbird\chmcms;
+
+require 'vendor/autoload.php';
+
+(new App())->run();
+```
+
+API引用，`public/api/index.php`：
+
+```php
+namespace chmbird\chmcms;
+
+require '../../server/index.php';
+```
+
+前端访问，“Console”显示：
+
+```
+chm cms server app is running...
 ```

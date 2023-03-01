@@ -1,55 +1,95 @@
 # ChmCMS
+
 A lightweight PHP CMS for learning.
 
 ## Change log
-In previous commits, we installed npm package "axios", for send http request of client.  
-Now, we add some test code, to verify that client can access to the php.  
-First, we need config Vite proxy, refer to the [offical guide](https://vitejs.dev/config/server-options.html#server-proxy).  
-Configration file：`client-src/vite.config.ts`
-```
-const targetHost = 'http://chmcms.local'
 
-server: {
-  proxy: {
-    '/api/': {
-      target: targetHost,
-      changeOrigin: true
+Now initialize the server project. Use Composer to manage PHP dependencies,
+[Reference docs](https://getcomposer.org/doc/)  
+Run in terminal:
+
+```shell
+cd server
+composer init
+```
+
+`Composer` show config option interactively:
+
+```
+Welcome to the Composer config generator
+
+This command will guide you through creating your composer.json config.
+
+Package name (<vendor>/<name>) [default]: chmbird/chm-cms
+Description []: A lightweight PHP CMS for learning.
+Author [default <email>, n to skip]:
+Minimum Stability []:
+Package Type (e.g. library, project, ) []: project
+License []: Apache-2.0
+```
+
+These are part of the options, that can be skipped by pressing enter and changed later.  
+`Do you confirm generation [yes]?` press enter, display:
+
+```
+PSR-4 autoloading configured. Use "namespace Chmbird\ChmCms;" in src/
+Include the Composer autoloader with: require 'vendor/autoload.php';
+```
+
+Finish, generate the configuration file `server/composer.json`, adjust it manually:
+
+```
+...
+
+  "autoload": {
+    "psr-4": {
+      "chmbird\\chmcms\\": "src/"    // Use lower case
     }
-  }
-}
+  },
+...
 ```
-Now, add test code to `App.vue`.
-```
-import axios from 'axios'
-import { onMounted } from "vue"
 
-function request() {
-  axios.get('/api/').then(res => {
-    console.log(res.data)
-  }).catch(err => {
-    console.log(err)
-  })
-}
+Finish, install PHP dependencies:
 
-onMounted(() => {
-  request()
-})
+```shell
+cd server
+composer install
 ```
-Next, run: "`npm run dev`"  
-Output on terminal:
-```
-  VITE v4.1.4  ready in 466 ms
 
-  ➜  Local:   http://127.0.0.1:5173/
-  ➜  Network: use --host to expose
-  ➜  press h to show help
-```
-In your browser, access: "http://127.0.0.1:5173/", and turn on "Developer tools", "Console" will output:
-```
-chm cms api
-```
-This is the output of "`public/api/index.php`":
+New PHP Class，`server/src/App.php`
+
 ```php
-<?php
-echo 'chm cms api';
+namespace chmbird\chmcms;
+
+class App {
+    ...
+    public function run() {
+        echo 'chm cms server app is running...';
+    }
+    ...
+}
+```
+
+Use in `server/index.php`
+
+```php
+namespace chmbird\chmcms;
+
+require 'vendor/autoload.php';
+
+(new App())->run();
+```
+
+Use in `public/api/index.php`
+
+```php
+namespace chmbird\chmcms;
+
+require '../../server/index.php';
+```
+
+Access by browser, "Console" print:
+
+```
+chm cms server app is running...
 ```
